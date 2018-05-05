@@ -1,0 +1,46 @@
+module GameServer{
+    exception CrowdedRoom{
+
+    };
+
+    struct Player{
+        string name;
+        long numberOfPicks;
+        long rightHandPicks;
+        boolean isHisTurn;
+        long turnShot;
+    };
+
+    typedef sequence<Player> Players;
+
+    interface ServerListener {
+
+        void newPlayerOnMatch(in Player player,in Players allPlayers);
+        void showUpdatesOfPlayers(in Players players);
+
+        void startOfTurn(in Players players);
+        void endOfTurn(in Players playersOnMatch,in Players winners, in string turnWinnerName);
+        void gameOver(in Players winners,in Player loser);
+
+        void connectionLost(in string playerName,in Players players);
+        void playerLeavingMatch(in string playerName,in Players players);
+
+    };
+
+	interface GameManager{
+
+
+        Player enterOnMatch(in ServerListener listener) raises (CrowdedRoom);
+        void leaveMatch(in string playerName);
+
+
+		Player currentPlayer();
+		void startNewTurn();
+		void finishTurnOf(in string playerName,in long rightHandPicks, in long turnShot);
+		boolean isAValidTurnShot(in string playerName,in long shot);
+		Player playerData(in string playerName);
+		Players playersInfo();
+
+	};
+
+};
